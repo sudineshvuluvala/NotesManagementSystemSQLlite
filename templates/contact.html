@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Contact Support{% endblock %}
+{% block content %}
+<section class="contact-wrap mx-auto">
+  <div class="contact-heading text-center mb-4">
+    <span class="badge text-bg-primary-subtle text-primary-emphasis px-3 py-2 mb-3">WE'RE HERE TO HELP</span>
+    <h1 class="h2 fw-bold mb-2">Contact Support</h1>
+    <p class="text-secondary mb-0">Tell us what went wrong or share your feedback. Your message will be sent directly to our support team.</p>
+  </div>
+
+  <div class="card border-0 shadow-sm contact-card">
+    <div class="card-body p-4 p-md-5">
+      <form method="post" action="{{ url_for('contact') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+        {# Honeypot anti-spam field. Keep it hidden from real users. #}
+        <div class="visually-hidden" aria-hidden="true">
+          <label for="website">Leave this field empty</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="name" class="form-label fw-semibold">Your name</label>
+            <input class="form-control" id="name" name="name" type="text" maxlength="100" autocomplete="name" required value="{{ form_data.get('name', '') }}" placeholder="Enter your name">
+          </div>
+          <div class="col-md-6">
+            <label for="email" class="form-label fw-semibold">Email address</label>
+            <input class="form-control" id="email" name="email" type="email" maxlength="254" autocomplete="email" required value="{{ form_data.get('email', '') }}" placeholder="you@example.com">
+            <div class="form-text">We'll use this address to reply to you.</div>
+          </div>
+          <div class="col-12">
+            <label for="subject" class="form-label fw-semibold">Subject</label>
+            <select class="form-select" id="subject" name="subject" required>
+              {% set current_subject = form_data.get('subject', '') %}
+              <option value="" disabled {% if not current_subject %}selected{% endif %}>Choose a problem type</option>
+              {% for option in ['Login or registration problem', 'Forgot password', 'Cannot create or edit notes', 'Cannot delete or view notes', 'Bug or technical issue', 'Feedback or suggestion', 'Other'] %}
+                <option value="{{ option }}" {% if current_subject == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="message" class="form-label fw-semibold">Describe your problem</label>
+            <textarea class="form-control" id="message" name="message" rows="6" maxlength="5000" required placeholder="Please explain what happened and what you expected to happen...">{{ form_data.get('message', '') }}</textarea>
+            <div class="form-text">Please do not include your password or other sensitive information.</div>
+          </div>
+          <div class="col-12 d-grid d-sm-flex gap-2 pt-2">
+            <button type="submit" class="btn btn-primary px-4">
+              <span aria-hidden="true">✉</span> Send Message
+            </button>
+            <a href="{{ url_for('view_all') if session.get('user_id') else url_for('login') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <p class="small text-secondary text-center mt-3 mb-0">Messages are sent securely to the site's configured support email.</p>
+</section>
+<style>
+  .contact-wrap { max-width: 760px; }
+  .contact-heading { max-width: 620px; margin-inline: auto; }
+  .contact-heading h1 { letter-spacing: -.03em; }
+  .contact-card { border-radius: 16px; }
+  .contact-card .form-control, .contact-card .form-select { border-color: #d9e2ec; border-radius: 9px; padding: .72rem .85rem; }
+  .contact-card .form-control:focus, .contact-card .form-select:focus { border-color: #0875d1; box-shadow: 0 0 0 .2rem rgba(8,117,209,.14); }
+  .contact-card .btn { border-radius: 8px; }
+</style>
+{% endblock %}
